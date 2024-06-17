@@ -23,7 +23,7 @@ def enhance_one_track(model, audio_path, saved_dir, cut_len, n_fft=400, hop=100,
             noisy, orig_sr=sr, target_sr=default_sr)
     if noisy.ndim == 1:
         noisy = np.array([noisy, noisy])
-    noisy = torch.from_numpy(noisy)
+    noisy = torch.from_numpy(noisy).float()
     noisy = noisy.cuda()
 
     c = torch.sqrt(noisy.size(-1) / torch.sum((noisy ** 2.0), dim=-1))
