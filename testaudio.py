@@ -29,7 +29,7 @@ def enhance_one_track(model, audio_path, saved_dir, cut_len, n_fft=400, hop=100,
     c = torch.sqrt(noisy.size(-1) / torch.sum((noisy ** 2.0), dim=-1))
     noisy = torch.transpose(noisy, 0, 1)
     noisy = torch.transpose(noisy * c, 0, 1)
-    
+
     length = noisy.size(-1)
     frame_num = int(np.ceil(length / 100))
     padded_len = frame_num * 100
@@ -41,7 +41,7 @@ def enhance_one_track(model, audio_path, saved_dir, cut_len, n_fft=400, hop=100,
             batch_size += 1
         noisy = torch.reshape(noisy, (batch_size, -1))
 
-    noisy_spec = torch.stft(noisy, n_fft, hop, window=torch.hamming_window(n_fft).cuda(), onesided=True)
+    noisy_spec = torch.stft(noisy, n_fft, hop, window=torch.hamming_window(n_fft).cuda(), onesided=True, return_complex=True)
     noisy_spec = power_compress(noisy_spec).permute(0, 1, 3, 2)
     est_real, est_imag, cmask = model(noisy_spec)
     est_real, est_imag = est_real.permute(0, 1, 3, 2), est_imag.permute(0, 1, 3, 2)
