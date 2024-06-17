@@ -21,15 +21,15 @@ def enhance_one_track(model, audio_path, saved_dir, cut_len, n_fft=400, hop=100,
     if sr != default_sr:
         noisy = librosa.resample(
             noisy, orig_sr=sr, target_sr=default_sr)
-        
+    if noisy.ndim == 1:
+        noisy = np.array([noisy, noisy])
     noisy = torch.from_numpy(noisy)
     noisy = noisy.cuda()
 
     c = torch.sqrt(noisy.size(-1) / torch.sum((noisy ** 2.0), dim=-1))
-    #noisy = torch.transpose(noisy, 0, 1)
-    #noisy = torch.transpose(noisy * c, 0, 1)
+    noisy = torch.transpose(noisy, 0, 1)
+    noisy = torch.transpose(noisy * c, 0, 1)
     noisy= noisy * c
-    
     length = noisy.size(-1)
     frame_num = int(np.ceil(length / 100))
     padded_len = frame_num * 100
