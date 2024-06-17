@@ -16,12 +16,13 @@ def enhance_one_track(model, audio_path, saved_dir, cut_len, n_fft=400, hop=100,
 
     name = os.path.split(audio_path)[-1]
     print('audio_path: {}'.format(audio_path))
-    noisy, sr = torchaudio.load(audio_path)
+    noisy, sr = sf.read(audio_path)
     #print('audio len: {}'.format(noisy.shape[1]/sr))
     if sr != default_sr:
         noisy = librosa.resample(
             noisy, orig_sr=sr, target_sr=default_sr)
-
+        
+    noisy = torch.from_numpy(noisy)
     noisy = noisy.cuda()
 
     c = torch.sqrt(noisy.size(-1) / torch.sum((noisy ** 2.0), dim=-1))
